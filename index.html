@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nikita Goyal — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf8f5;
+      --bg-soft: #f3efe8;
+      --ink: #1a1714;
+      --ink-mid: #4a4540;
+      --ink-light: #9a8f84;
+      --accent: #c4622d;
+      --accent-warm: #e07a45;
+      --accent-blue: #2a6db5;
+      --dark-bg: #1a1714;
+      --dark-surface: #242019;
+      --serif: 'Lora', Georgia, serif;
+      --sans: 'Bricolage Grotesque', sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --nav-h: 64px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; overflow-x: hidden; }
+
+    /* ══════════════════════════════
+       NAV WRAPPER — sticky container
+       The bar + the mobile dropdown
+       both live inside #nav-wrapper.
+    ══════════════════════════════ */
+    #nav-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* The visible 64px bar */
+    #nav-bar {
+      height: var(--nav-h);
+      background: rgba(250,248,245,0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(196,98,45,0.13);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── Desktop links (always visible on wide screens) ── */
+    #nav-links {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    #nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+    #nav-links a:hover { color: var(--accent); }
+
+    /* ── Hamburger button (hidden on desktop) ── */
+    #nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      flex-shrink: 0;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      gap: 0;
+      transition: background 0.2s;
+    }
+    #nav-toggle:hover { background: rgba(196,98,45,0.09); }
+    #nav-toggle .bar {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      margin: 3px 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+    }
+    #nav-toggle.open .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    #nav-toggle.open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    #nav-toggle.open .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    /* ── Mobile dropdown drawer ── */
+    #nav-drawer {
+      display: none; /* shown only on mobile */
+      overflow: hidden;
+      max-height: 0;
+      background: rgba(250,248,245,0.99);
+      border-bottom: 1px solid rgba(196,98,45,0.13);
+      transition: max-height 0.38s ease;
+    }
+    #nav-drawer.open {
+      max-height: 420px;
+    }
+    #nav-drawer ul {
+      list-style: none;
+      padding: 0.5rem 5% 1.25rem;
+    }
+    #nav-drawer ul li {
+      border-bottom: 1px solid rgba(196,98,45,0.07);
+    }
+    #nav-drawer ul li:last-child { border-bottom: none; }
+    #nav-drawer ul a {
+      display: block;
+      padding: 1rem 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.2s, padding-left 0.2s;
+    }
+    #nav-drawer ul a:hover,
+    #nav-drawer ul a:active { color: var(--accent); padding-left: 0.5rem; }
+
+    /* ── Switch to mobile layout ── */
+    @media (max-width: 720px) {
+      #nav-toggle  { display: flex; }
+      #nav-links   { display: none; }   /* hide desktop links */
+      #nav-drawer  { display: block; }  /* enable drawer (still collapsed via max-height) */
+    }
+
+    /* ══════════════ HERO ══════════════ */
+    #hero {
+      min-height: 92vh; display: flex; align-items: center;
+      padding: 6rem 5% 4rem; position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute; top: -60px; right: -80px;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,98,45,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #hero::after {
+      content: ''; position: absolute; bottom: 20px; left: -40px;
+      width: 350px; height: 350px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,98,45,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 900px; position: relative; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before { content: '✦'; font-size: 0.7rem; color: var(--accent); opacity: 0.75; }
+    h1 {
+      font-family: var(--serif); font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em;
+      color: var(--ink); margin-bottom: 0.5rem;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--ink-mid);
+      font-weight: 400; margin-bottom: 2rem; max-width: 580px; line-height: 1.5;
+    }
+    .hero-desc {
+      font-family: var(--serif); font-size: 1rem; color: var(--ink-mid);
+      max-width: 560px; line-height: 1.75; margin-bottom: 3rem;
+    }
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+    .btn-primary {
+      padding: 0.85rem 2rem; background: var(--accent); color: white;
+      border-radius: 100px; font-weight: 600; font-size: 0.9rem;
+      text-decoration: none; transition: background 0.2s, transform 0.15s; display: inline-block;
+    }
+    .btn-primary:hover { background: #a84f20; transform: translateY(-2px); }
+    .btn-secondary {
+      padding: 0.85rem 2rem; background: transparent; color: var(--ink);
+      border: 1.5px solid rgba(26,23,20,0.2); border-radius: 100px;
+      font-weight: 600; font-size: 0.9rem; text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s; display: inline-block;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .stats-row { display: flex; gap: 3rem; flex-wrap: wrap; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-num {
+      font-family: var(--serif); font-size: 2.5rem; font-weight: 700;
+      color: var(--accent); line-height: 1; margin-bottom: 0.35rem;
+    }
+    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--ink-light); letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* ══════════════ SECTIONS ══════════════ */
+    section { padding: 6rem 5%; }
+    .section-header { margin-bottom: 3.5rem; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.75rem;
+    }
+    .section-tag::before { content: '✦'; font-size: 0.6rem; color: var(--accent); opacity: 0.75; }
+    h2 {
+      font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink);
+    }
+    h2 em { font-style: italic; color: var(--accent); }
+    .section-lead { font-family: var(--serif); color: var(--ink-mid); font-size: 1.05rem; line-height: 1.75; margin-top: 0.75rem; max-width: 620px; }
+
+    /* ABOUT */
+    #about { background: var(--bg-soft); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .about-text p { font-family: var(--serif); font-size: 1.05rem; color: var(--ink-mid); line-height: 1.8; margin-bottom: 1.25rem; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-highlight { color: var(--accent); font-weight: 600; }
+    .about-cards { display: flex; flex-direction: column; gap: 1rem; }
+    .about-card { background: var(--bg); border-radius: var(--radius); padding: 1.5rem; border: 1px solid rgba(196,98,45,0.1); transition: border-color 0.2s, transform 0.2s; }
+    .about-card:hover { border-color: var(--accent); transform: translateX(4px); }
+    .about-card-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .about-card h4 { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .about-card p { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.5; }
+
+    /* EXPERIENCE */
+    #experience { background: var(--bg); }
+    .timeline { position: relative; max-width: 860px; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 0; width: 1.5px; background: linear-gradient(to bottom, var(--accent), rgba(196,98,45,0.1)); }
+    .timeline-item { padding-left: 2.5rem; position: relative; margin-bottom: 3.5rem; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-dot { position: absolute; left: -5px; top: 6px; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 3px rgba(196,98,45,0.2); }
+    .exp-meta { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.35rem; }
+    .exp-company { font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+    .exp-date { font-size: 0.78rem; color: var(--ink-light); font-weight: 500; }
+    .exp-role { font-family: var(--serif); font-style: italic; font-size: 1rem; color: var(--accent); margin-bottom: 0.35rem; }
+    .exp-location { font-size: 0.8rem; color: var(--ink-light); margin-bottom: 1.1rem; }
+    .exp-subsection { margin-bottom: 1.5rem; }
+    .exp-subsection:last-child { margin-bottom: 0; }
+    .exp-subsection-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mid); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+    .exp-subsection-title::after { content: ''; flex: 1; height: 1px; background: rgba(196,98,45,0.15); }
+    .exp-items { list-style: none; }
+    .exp-items li { font-size: 0.91rem; color: var(--ink-mid); line-height: 1.65; padding-left: 1.1rem; position: relative; margin-bottom: 0.55rem; }
+    .exp-items li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; top: 0.05em; }
+    .exp-links { display: flex; gap: 0.75rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .exp-link { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: var(--accent-blue); text-decoration: none; padding: 0.35rem 0.85rem; border: 1.5px solid var(--accent-blue); border-radius: 100px; transition: background 0.2s, color 0.2s; }
+    .exp-link:hover { background: var(--accent-blue); color: white; }
+    .exp-link svg { width: 12px; height: 12px; }
+
+    /* SKILLS */
+    #skills { background: var(--bg-soft); }
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .skill-group { background: var(--bg); border-radius: var(--radius); padding: 1.75rem; border: 1px solid rgba(196,98,45,0.1); transition: border-color 0.2s, box-shadow 0.2s; }
+    .skill-group:hover { border-color: rgba(196,98,45,0.35); box-shadow: 0 4px 24px rgba(196,98,45,0.07); }
+    .skill-group-title { font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pill { font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.75rem; background: var(--bg-soft); color: var(--ink-mid); border-radius: 100px; border: 1px solid rgba(196,98,45,0.12); transition: background 0.15s, color 0.15s; cursor: default; }
+    .pill:hover { background: var(--accent); color: white; }
+
+    /* EDUCATION */
+    #education { background: var(--bg); }
+    .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .edu-card { background: var(--bg-soft); border-radius: var(--radius-lg); padding: 2rem; border: 1px solid rgba(196,98,45,0.1); position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+    .edu-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(196,98,45,0.1); }
+    .edu-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-warm)); }
+    .edu-degree { font-family: var(--serif); font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.3rem; line-height: 1.35; }
+    .edu-school { font-weight: 700; font-size: 0.88rem; color: var(--accent); margin-bottom: 0.3rem; }
+    .edu-meta { font-size: 0.78rem; color: var(--ink-light); font-weight: 500; }
+    .edu-gpa { display: inline-block; margin-top: 0.65rem; font-size: 0.78rem; font-weight: 700; color: var(--accent); background: rgba(196,98,45,0.08); padding: 0.2rem 0.65rem; border-radius: 100px; }
+
+    /* PROJECTS */
+    #projects { background: var(--bg-soft); }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+    .project-card { background: var(--bg); border-radius: var(--radius-lg); padding: 2rem; border: 1px solid rgba(196,98,45,0.1); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; overflow: hidden; }
+    .project-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(196,98,45,0.1); border-color: rgba(196,98,45,0.3); }
+    .project-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+    .project-card:hover::after { transform: scaleX(1); }
+    .project-tag { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; opacity: 0.85; }
+    .project-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 100px; background: rgba(196,98,45,0.1); color: var(--accent); margin-left: 0.4rem; }
+    .project-card h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; line-height: 1.3; }
+    .project-desc { font-size: 0.88rem; color: var(--ink-mid); line-height: 1.65; flex: 1; margin-bottom: 1.25rem; }
+    .project-techs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .tech-tag { font-size: 0.72rem; padding: 0.2rem 0.6rem; background: var(--bg-soft); color: var(--ink-mid); border-radius: 4px; font-weight: 600; border: 1px solid rgba(196,98,45,0.12); }
+    .project-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 600; color: var(--accent); text-decoration: none; transition: gap 0.2s; }
+    .project-link:hover { gap: 0.7rem; }
+    .project-no-link { font-size: 0.82rem; color: var(--ink-light); font-style: italic; }
+    .projects-footer { text-align: center; }
+    .btn-github { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2.25rem; background: var(--ink); color: white; border-radius: 100px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: background 0.2s, transform 0.15s; }
+    .btn-github:hover { background: var(--accent); transform: translateY(-2px); }
+    .btn-github svg { width: 16px; height: 16px; }
+
+    /* CONTACT */
+    #contact { background: var(--dark-bg); color: white; padding: 6rem 5%; }
+    #contact .section-tag { color: var(--accent-warm); }
+    #contact .section-tag::before { content: '✦'; color: var(--accent-warm); }
+    #contact h2 { color: white; }
+    #contact .section-lead { color: rgba(255,255,255,0.55); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; margin-top: 3.5rem; }
+    .contact-info p { color: rgba(255,255,255,0.6); font-size: 0.95rem; line-height: 1.75; margin-bottom: 2.5rem; font-family: var(--serif); }
+    .contact-details { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.9rem 1.25rem; background: var(--dark-surface); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); text-decoration: none; color: white; transition: border-color 0.2s, background 0.2s; font-size: 0.88rem; font-weight: 500; }
+    .contact-item:hover { border-color: rgba(196,98,45,0.4); background: rgba(196,98,45,0.08); }
+    .contact-item-icon { font-size: 1rem; flex-shrink: 0; opacity: 0.7; }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+    .form-group input, .form-group textarea { background: var(--dark-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 0.85rem 1rem; color: white; font-family: var(--sans); font-size: 0.9rem; outline: none; transition: border-color 0.2s, background 0.2s; resize: none; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); background: rgba(196,98,45,0.06); }
+    .form-group textarea { min-height: 130px; }
+    .btn-send { padding: 0.95rem 2.5rem; background: var(--accent); color: white; border: none; border-radius: 100px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: var(--sans); transition: background 0.2s, transform 0.15s; align-self: flex-start; display: flex; align-items: center; gap: 0.5rem; }
+    .btn-send:hover { background: var(--accent-warm); transform: translateY(-2px); }
+
+    footer { background: #110f0d; color: rgba(255,255,255,0.35); text-align: center; padding: 1.75rem 5%; font-size: 0.8rem; font-weight: 500; }
+
+    @media (max-width: 720px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+      h1 { font-size: 2.6rem; }
+      .stats-row { gap: 1.5rem; }
+      section { padding: 4rem 5%; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<div id="nav-wrapper">
+
+  <!-- The 64px bar always visible -->
+  <div id="nav-bar">
+    <span class="nav-brand">Nikita Goyal</span>
+
+    <!-- Desktop: inline links -->
+    <ul id="nav-links">
+      <li><a href="#about"      class="nav-a">About</a></li>
+      <li><a href="#experience" class="nav-a">Experience</a></li>
+      <li><a href="#skills"     class="nav-a">Skills</a></li>
+      <li><a href="#education"  class="nav-a">Education</a></li>
+      <li><a href="#projects"   class="nav-a">Projects</a></li>
+      <li><a href="#contact"    class="nav-a">Contact</a></li>
+    </ul>
+
+    <!-- Mobile: hamburger button -->
+    <button id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+
+  <!-- Mobile: dropdown drawer (separate from the bar so height never clips it) -->
+  <div id="nav-drawer">
+    <ul>
+      <li><a href="#about"      class="nav-a">About</a></li>
+      <li><a href="#experience" class="nav-a">Experience</a></li>
+      <li><a href="#skills"     class="nav-a">Skills</a></li>
+      <li><a href="#education"  class="nav-a">Education</a></li>
+      <li><a href="#projects"   class="nav-a">Projects</a></li>
+      <li><a href="#contact"    class="nav-a">Contact</a></li>
+    </ul>
+  </div>
+
+</div><!-- /nav-wrapper -->
+
+
+<!-- ══════════════ HERO ══════════════ -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Software Engineer 2 · AI &amp; Infrastructure</div>
+    <h1>Nikita <em>Goyal</em></h1>
+    <p class="hero-subtitle">Building AI-powered tools and robust datacenter infrastructure at the intersection of firmware, observability, and machine learning.</p>
+    <p class="hero-desc">From real-time server telemetry pipelines ingesting 200+ metrics to GenAI coding agents that cut bug resolution from 5–7 days to 2 — I ship systems that protect enterprise infrastructure at scale.</p>
+    <div class="hero-ctas">
+      <a href="#experience" class="btn-primary nav-a">View My Work</a>
+      <a href="#contact"  class="btn-secondary nav-a">Get In Touch</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-num" data-target="4"   data-suffix="+">0+</span><span class="stat-label">Years Experience</span></div>
+      <div class="stat"><span class="stat-num" data-target="14"  data-suffix="+">0+</span><span class="stat-label">AI Skills Built</span></div>
+      <div class="stat"><span class="stat-num" data-target="200" data-suffix="+">0+</span><span class="stat-label">Metrics Ingested</span></div>
+      <div class="stat"><span class="stat-num" data-target="2"   data-suffix="×">0×</span><span class="stat-label">Published Research</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ABOUT ══════════════ -->
+<section id="about">
+  <div class="section-header reveal">
+    <div class="section-tag">About Me</div>
+    <h2>Engineer, researcher, <em>builder</em></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>Hi! I'm <span class="about-highlight">Nikita Goyal</span>, a Software Engineer 2 at <span class="about-highlight">Dell Technologies</span> in Austin, TX, where I build open-source infrastructure tools and AI-powered developer productivity agents for enterprise firmware teams.</p>
+      <p>My work spans <span class="about-highlight">server telemetry pipelines</span> delivering 200+ metrics via Redfish SSE into Elasticsearch, InfluxDB, Prometheus, and Splunk — to <span class="about-highlight">GenAI coding agents</span> that cut complex multi-file bug resolution from 5–7 days down to 2 days.</p>
+      <p>I hold an M.S. in Data Science from University of Cumberlands and an M.S. in Computer Science from UMKC (GPA 3.8), with published research in parallel sorting algorithms presented at the Las Vegas International Conference.</p>
+      <p>I'm passionate about using AI to make engineers dramatically more productive — and writing infrastructure code that protects millions of dollars of datacenter hardware.</p>
+    </div>
+    <div class="about-cards reveal">
+      <div class="about-card"><div class="about-card-icon">🤖</div><h4>AI / GenAI Engineering</h4><p>LLM agents, RAG pipelines, NER chatbots, and AI-assisted developer workflows using Claude, OpenAI, Windsurf, and Devin.</p></div>
+      <div class="about-card"><div class="about-card-icon">⚙️</div><h4>Infrastructure &amp; Telemetry</h4><p>Go-based microservices, Redfish SSE streaming, iDRAC pipelines, and Grafana-powered datacenter observability at scale.</p></div>
+      <div class="about-card"><div class="about-card-icon">📊</div><h4>Data Science &amp; ML</h4><p>Deep learning, CNN image classification, parallel algorithm research published in peer-reviewed journals, and predictive modeling.</p></div>
+      <div class="about-card"><div class="about-card-icon">☁️</div><h4>Cloud &amp; DevOps</h4><p>Docker, Kubernetes, Helm, AWS, Azure, Jenkins CI/CD, and Linux infrastructure for enterprise-scale production systems.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ EXPERIENCE ══════════════ -->
+<section id="experience">
+  <div class="section-header reveal">
+    <div class="section-tag">Career</div>
+    <h2>Where I've <em>worked</em></h2>
+    <p class="section-lead">Professional experience building real products used by enterprise customers worldwide.</p>
+  </div>
+  <div class="timeline">
+
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="exp-meta"><span class="exp-company">Dell Technologies</span><span class="exp-date">Aug 2021 – Present</span></div>
+      <div class="exp-role">Software Engineer 2 — Go, Python, C</div>
+      <div class="exp-location">📍 Austin, TX</div>
+
+      <div class="exp-subsection">
+        <div class="exp-subsection-title">Leak Detection Tool</div>
+        <ul class="exp-items">
+          <li>Developed an open-source liquid cooling leak detection tool for Dell Integrated Rack solutions in Go and React using AI-assisted development, detecting leaks via Redfish SSE streaming and triggering automated shutdown across any custom device type — protecting AI and HPC datacenter infrastructure worth millions from liquid damage.</li>
+          <li>Stress-tested by simulating 100 concurrent rack devices, validating that leak detection and automated shutdown workflows perform reliably at scale under real-world datacenter conditions.</li>
+        </ul>
+      </div>
+      <div class="exp-subsection">
+        <div class="exp-subsection-title">AI / GenAI &amp; Developer Productivity</div>
+        <ul class="exp-items">
+          <li>Built <strong>14+ AI coding-agent skills</strong> for firmware workflows covering root-cause analysis, CCB report generation, PR review, and update automation — reducing complex multi-file bug resolution from 5–7 days to 2 days across a large-scale production Go codebase.</li>
+          <li>Developed an AI-powered documentation generation agent using Dell internal LLM tools and Windsurf workflows, automatically generating and syncing project documentation from code changes and eliminating manual documentation overhead for firmware teams.</li>
+        </ul>
+      </div>
+      <div class="exp-subsection">
+        <div class="exp-subsection-title">Server Telemetry</div>
+        <ul class="exp-items">
+          <li>Developed and maintained metric injection pipelines for iDRAC, ensuring accurate telemetry data across different releases and platforms of Dell PowerEdge servers to maintain uninterrupted server health monitoring and hardware failure prediction for enterprise customers worldwide.</li>
+          <li>Contributed to the iDRAC Telemetry Reference Tools open-source Go-based telemetry pipeline, delivering redfish-compliant metric report generation ingesting <strong>200+ metrics</strong> via SSE into Elasticsearch, InfluxDB, Prometheus, and Splunk with live Grafana dashboards for datacenter observability.</li>
+        </ul>
+        <div class="exp-links">
+          <a href="https://github.com/dell/iDRAC-Telemetry-Reference-Tools" target="_blank" rel="noopener" class="exp-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+          <a href="https://dl.dell.com/content/manual43363890-dell-idrac-telemetry-reference-guide.pdf?language=en-us" target="_blank" rel="noopener" class="exp-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 01-2 2H4a2 2 0 01-2-2V2a2 2 0 012-2h5.5L14 4.5zm-3 0A1.5 1.5 0 019.5 3V1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V4.5h-2z"/></svg>
+            PDF Guide
+          </a>
+        </div>
+      </div>
+      <div class="exp-subsection">
+        <div class="exp-subsection-title">Code Quality</div>
+        <ul class="exp-items">
+          <li>Identified and resolved Coverity static analysis defects across the telemetry and firmware codebase, improving code quality and ensuring compliance with Dell security standards before production releases.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="exp-meta"><span class="exp-company">Cerner Corporation</span><span class="exp-date">Mar 2021 – Aug 2021</span></div>
+      <div class="exp-role">Software Engineer — Ruby on Rails, Bootstrap</div>
+      <div class="exp-location">📍 Kansas City, MO</div>
+      <ul class="exp-items">
+        <li>Built and maintained internal portal solutions using Ruby on Rails MVC architecture; translated UI specs into production code, resolved bugs, and improved system stability for clinical end-users.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ SKILLS ══════════════ -->
+<section id="skills">
+  <div class="section-header reveal">
+    <div class="section-tag">Expertise</div>
+    <h2>Tools &amp; <em>Technologies</em></h2>
+    <p class="section-lead">A deep toolkit spanning infrastructure engineering, AI development, and data science.</p>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-group reveal"><div class="skill-group-title">Languages</div><div class="skill-pills"><span class="pill">Go</span><span class="pill">Python</span><span class="pill">C/C++</span><span class="pill">Bash</span><span class="pill">JavaScript</span><span class="pill">TypeScript</span><span class="pill">Ruby</span></div></div>
+    <div class="skill-group reveal"><div class="skill-group-title">AI / ML</div><div class="skill-pills"><span class="pill">OpenAI APIs</span><span class="pill">LLM Agents</span><span class="pill">RAG</span><span class="pill">Prompt Engineering</span><span class="pill">Keras</span><span class="pill">TensorFlow</span><span class="pill">NER</span></div></div>
+    <div class="skill-group reveal"><div class="skill-group-title">AI Dev Tools</div><div class="skill-pills"><span class="pill">Claude</span><span class="pill">Windsurf</span><span class="pill">Devin</span><span class="pill">GitHub Copilot</span></div></div>
+    <div class="skill-group reveal"><div class="skill-group-title">Data &amp; Observability</div><div class="skill-pills"><span class="pill">Elasticsearch</span><span class="pill">InfluxDB</span><span class="pill">Prometheus</span><span class="pill">Grafana</span><span class="pill">Splunk</span><span class="pill">Kafka</span><span class="pill">MySQL</span><span class="pill">MongoDB</span><span class="pill">PostgreSQL</span></div></div>
+    <div class="skill-group reveal"><div class="skill-group-title">Infrastructure &amp; Cloud</div><div class="skill-pills"><span class="pill">Docker</span><span class="pill">Kubernetes</span><span class="pill">AWS</span><span class="pill">Azure</span><span class="pill">Jenkins</span><span class="pill">Git</span><span class="pill">Linux</span></div></div>
+    <div class="skill-group reveal"><div class="skill-group-title">Protocols &amp; Standards</div><div class="skill-pills"><span class="pill">Redfish</span><span class="pill">SSE</span><span class="pill">iDRAC</span><span class="pill">REST</span><span class="pill">Coverity</span><span class="pill">Helm</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════════ EDUCATION ══════════════ -->
+<section id="education">
+  <div class="section-header reveal">
+    <div class="section-tag">Education</div>
+    <h2>Academic <em>Foundation</em></h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card reveal"><div class="edu-school">University of Cumberlands</div><div class="edu-degree">M.S. Data Science</div><div class="edu-meta">Williamsburg, KY · May 2023 – Dec 2024</div><div class="edu-gpa">GPA 3.75</div></div>
+    <div class="edu-card reveal"><div class="edu-school">University of Missouri, Kansas City</div><div class="edu-degree">M.S. Computer Science</div><div class="edu-meta">Kansas City, MO · Jan 2019 – May 2020</div><div class="edu-gpa">GPA 3.8</div></div>
+    <div class="edu-card reveal"><div class="edu-school">Chitkara University</div><div class="edu-degree">B.E. Computer Science &amp; Engineering</div><div class="edu-meta">India · Aug 2014 – May 2018</div><div class="edu-gpa">CGPA 8.56</div></div>
+  </div>
+</section>
+
+<!-- ══════════════ PROJECTS ══════════════ -->
+<section id="projects">
+  <div class="section-header reveal">
+    <div class="section-tag">Projects &amp; Research</div>
+    <h2>Things I've <em>built</em></h2>
+    <p class="section-lead">Key projects spanning GenAI, computer vision, algorithms research, and machine learning.</p>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div><div class="project-tag">AI / NLP <span class="project-badge">🏆 Finalist</span></div><h3>Dynamic AI Chatbot for Dell Tools</h3><p class="project-desc">Built a NER + RAG-powered chatbot that converts natural-language queries into actionable API calls for Dell internal tooling workflows. Named Finalist in the Dell Technologies Innovation Competition (2023).</p><div class="project-techs"><span class="tech-tag">Python</span><span class="tech-tag">NER</span><span class="tech-tag">RAG</span><span class="tech-tag">LLM APIs</span></div></div>
+      <span class="project-no-link">Internal project</span>
+    </div>
+    <div class="project-card reveal">
+      <div><div class="project-tag">Algorithms / Research</div><h3>Parallel Sorting Algorithms</h3><p class="project-desc">Published in the Canadian Centre of Science and Education; presented at the Las Vegas International Conference. Thesis demonstrated constant-time sorting on a CRCW PRAM model with significant real-world speedups on large datasets.</p><div class="project-techs"><span class="tech-tag">C++</span><span class="tech-tag">PRAM Model</span><span class="tech-tag">Parallel Computing</span><span class="tech-tag">Published</span></div></div>
+      <a href="https://scholar.google.com/citations?user=l8ekxvUAAAAJ&hl=en" target="_blank" rel="noopener" class="project-link">View on Google Scholar →</a>
+    </div>
+    <div class="project-card reveal">
+      <div><div class="project-tag">Deep Learning / Vision</div><h3>Freehand Sketch Recognition</h3><p class="project-desc">Classified hand-drawn sketches using VGG-16 CNN on the TU Berlin dataset, achieving 71% accuracy. Deployed as a live Flask web app for real-time browser-based inference on user-drawn inputs.</p><div class="project-techs"><span class="tech-tag">Python</span><span class="tech-tag">VGG-16</span><span class="tech-tag">TensorFlow</span><span class="tech-tag">Flask</span></div></div>
+      <a href="https://github.com/Nikii1118/CS5590-Python-DL-Session2/tree/master/Final%20Python%20Project%20ID1" target="_blank" rel="noopener" class="project-link">View on GitHub →</a>
+    </div>
+    <div class="project-card reveal">
+      <div><div class="project-tag">ML / Hackathon <span class="project-badge">🥉 3rd Place</span></div><h3>College Admissions Predictor</h3><p class="project-desc">Won 3rd place at UMKC Hack-A-Roo (2019). Built a machine learning predictor for graduate school admission probability using IBM Private Cloud, trained on academic profile features with interpretable output.</p><div class="project-techs"><span class="tech-tag">Python</span><span class="tech-tag">scikit-learn</span><span class="tech-tag">IBM Cloud</span><span class="tech-tag">Hackathon</span></div></div>
+      <span class="project-no-link">Hackathon project</span>
+    </div>
+  </div>
+  <div class="projects-footer reveal">
+    <a href="https://github.com/Nikii1118" target="_blank" rel="noopener" class="btn-github">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View All Projects on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════ CONTACT ══════════════ -->
+<section id="contact">
+  <div class="section-header reveal">
+    <div class="section-tag">Contact</div>
+    <h2>Let's <em>connect</em></h2>
+    <p class="section-lead">Always open to new opportunities, collaborations, and interesting conversations.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <p>Whether you're looking to collaborate on a project, discuss a job opportunity, or just want to say hello — I'd love to hear from you. I typically respond within 24 hours.</p>
+      <div class="contact-details">
+        <a href="mailto:nikita96goyal@gmail.com" class="contact-item"><span class="contact-item-icon">✉️</span>nikita96goyal@gmail.com</a>
+        <a href="tel:+19135966090" class="contact-item"><span class="contact-item-icon">📱</span>913-596-6090</a>
+        <a href="https://linkedin.com/in/nikita-goyal-241884b3" target="_blank" rel="noopener" class="contact-item"><span class="contact-item-icon">💼</span>LinkedIn — Nikita Goyal</a>
+        <a href="https://github.com/Nikii1118" target="_blank" rel="noopener" class="contact-item"><span class="contact-item-icon">🐙</span>GitHub — Nikii1118</a>
+      </div>
+    </div>
+    <form class="contact-form reveal" onsubmit="handleFormSubmit(event)">
+      <div class="form-row">
+        <div class="form-group"><label for="fname">Name</label><input type="text" id="fname" placeholder="Your name" required /></div>
+        <div class="form-group"><label for="femail">Email</label><input type="email" id="femail" placeholder="your@email.com" required /></div>
+      </div>
+      <div class="form-group"><label for="fsubject">Subject</label><input type="text" id="fsubject" placeholder="What's this about?" /></div>
+      <div class="form-group"><label for="fmessage">Message</label><textarea id="fmessage" placeholder="Tell me more..." required></textarea></div>
+      <button type="submit" class="btn-send">Send Message ✦</button>
+      <p id="form-status" style="color:#e07a45;font-size:0.82rem;margin-top:0.5rem;display:none;"></p>
+    </form>
+  </div>
+</section>
+
+<footer><p>© 2025 Nikita Goyal · Austin, TX · All rights reserved</p></footer>
+
+<script>
+(function () {
+
+  var navWrapper = document.getElementById('nav-wrapper');
+  var toggle     = document.getElementById('nav-toggle');
+  var drawer     = document.getElementById('nav-drawer');
+
+  /* ── Smooth scroll helper ── */
+  function scrollTo(href) {
+    var target = document.querySelector(href);
+    if (!target) return;
+    var navH = navWrapper.offsetHeight;
+    var top  = target.getBoundingClientRect().top + window.pageYOffset - navH - 8;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+
+  /* ── Hamburger toggle ── */
+  toggle.addEventListener('click', function () {
+    var open = drawer.classList.toggle('open');
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+
+  /* ── All nav links (desktop + drawer) ── */
+  document.querySelectorAll('a.nav-a').forEach(function (a) {
+    var href = a.getAttribute('href');
+    if (!href || href.charAt(0) !== '#') return; // skip external links
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      // close drawer
+      drawer.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open menu');
+      // scroll
+      scrollTo(href);
+    });
+  });
+
+  /* ── Count-up on page load ── */
+  function countUp(el) {
+    var target   = parseInt(el.getAttribute('data-target'), 10);
+    var suffix   = el.getAttribute('data-suffix') || '';
+    var duration = 2000;
+    var startTs  = null;
+    function step(ts) {
+      if (!startTs) startTs = ts;
+      var p = Math.min((ts - startTs) / duration, 1);
+      var e = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      el.textContent = Math.floor(e * target) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () {
+      document.querySelectorAll('.stat-num[data-target]').forEach(countUp);
+    }, 350);
+  });
+
+  /* ── Scroll-reveal ── */
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+
+  /* ── Contact form ── */
+  window.handleFormSubmit = function (e) {
+    e.preventDefault();
+    var s = document.getElementById('form-status');
+    s.textContent = '✓ Message sent! I\'ll be in touch soon.';
+    s.style.display = 'block';
+    e.target.reset();
+    setTimeout(function () { s.style.display = 'none'; }, 5000);
+  };
+
+})();
+</script>
+</body>
+</html>
