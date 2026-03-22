@@ -167,7 +167,9 @@
       background: radial-gradient(circle, rgba(196,98,45,0.05) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero-inner { max-width: 900px; position: relative; }
+    .hero-inner { max-width: 1100px; position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: center; }
+    .hero-content { min-width: 0; }
+    .hero-stats-side { display: flex; flex-direction: column; gap: 2.5rem; align-items: flex-start; padding-left: 3rem; border-left: 1px solid rgba(196,98,45,0.15); flex-shrink: 0; }
     .hero-eyebrow {
       display: inline-flex; align-items: center; gap: 0.5rem;
       font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
@@ -336,6 +338,8 @@
       .form-row { grid-template-columns: 1fr; }
       h1 { font-size: 2.6rem; }
       .stats-row { gap: 1.5rem; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-stats-side { flex-direction: row; flex-wrap: wrap; gap: 1.5rem 2.5rem; border-left: none; padding-left: 0; border-top: 1px solid rgba(196,98,45,0.15); padding-top: 2rem; }
       section { padding: 4rem 5%; }
     }
 
@@ -388,15 +392,17 @@
 <!-- ══════════════ HERO ══════════════ -->
 <section id="hero">
   <div class="hero-inner">
-    <div class="hero-eyebrow">Software Engineer 2 · AI &amp; Infrastructure</div>
-    <h1>Nikita <em>Goyal</em></h1>
-    <p class="hero-subtitle">Building AI-powered tools and robust datacenter infrastructure at the intersection of firmware, observability, and machine learning.</p>
-    <p class="hero-desc">From real-time server telemetry pipelines ingesting 200+ metrics to GenAI coding agents that cut bug resolution from 5–7 days to 2 — I ship systems that protect enterprise infrastructure at scale.</p>
-    <div class="hero-ctas">
-      <a href="#experience" class="btn-primary nav-a">View My Work</a>
-      <a href="#contact"  class="btn-secondary nav-a">Get In Touch</a>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Software Engineer 2 · AI &amp; Infrastructure</div>
+      <h1>Nikita <em>Goyal</em></h1>
+      <p class="hero-subtitle">Building AI-powered tools and robust datacenter infrastructure at the intersection of firmware, observability, and machine learning.</p>
+      <p class="hero-desc">From real-time server telemetry pipelines ingesting 200+ metrics to GenAI coding agents that cut bug resolution from 5–7 days to 2 — I ship systems that protect enterprise infrastructure at scale.</p>
+      <div class="hero-ctas">
+        <a href="#experience" class="btn-primary nav-a">View My Work</a>
+        <a href="#contact"  class="btn-secondary nav-a">Get In Touch</a>
+      </div>
     </div>
-    <div class="stats-row">
+    <div class="hero-stats-side">
       <div class="stat"><span class="stat-num" data-target="4"   data-suffix="+">0+</span><span class="stat-label">Years Experience</span></div>
       <div class="stat"><span class="stat-num" data-target="14"  data-suffix="+">0+</span><span class="stat-label">AI Skills Built</span></div>
       <div class="stat"><span class="stat-num" data-target="200" data-suffix="+">0+</span><span class="stat-label">Metrics Ingested</span></div>
@@ -413,7 +419,7 @@
   </div>
   <div class="about-grid">
     <div class="about-text reveal">
-      <p>I'm <span class="about-highlight">Nikita Goyal</span>, a Software Engineer 2 at <span class="about-highlight">Dell Technologies</span> in Austin, TX — building open-source infrastructure tools and AI-powered productivity agents for enterprise firmware teams.</p>
+      <p>I'm <span class="about-highlight">Nikita Goyal</span>, currently a Software Engineer 2 at <span class="about-highlight">Dell Technologies</span>, building open-source infrastructure tools and AI-powered productivity agents for enterprise firmware teams. Passionate about AI-powered development, I'm actively exploring new opportunities to broaden my experience and grow further in the industry.</p>
       <p>I hold dual M.S. degrees in Data Science and Computer Science, with published research in parallel algorithms. Passionate about using AI to make engineers dramatically more productive.</p>
     </div>
     <div class="about-cards reveal">
@@ -660,14 +666,47 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
 
-  /* ── Contact form ── */
+  /* ── Contact form → Google Forms ── */
+  // TODO: Replace these with your actual Google Form values
+  // Get them via: Forms → 3-dot menu → "Get pre-filled link"
+  var GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScgO1-74GPoIpbAeIoYX0_fvkZqB581jzjIKJ3s9pUqgjV2Vw/formResponse';
+  var ENTRY_NAME    = 'entry.2142356973';
+  var ENTRY_EMAIL   = 'entry.1589298267';
+  var ENTRY_SUBJECT = 'entry.830756389';
+  var ENTRY_MESSAGE = 'entry.1567371543';
+
   window.handleFormSubmit = function (e) {
     e.preventDefault();
     var s = document.getElementById('form-status');
-    s.textContent = '✓ Message sent! I\'ll be in touch soon.';
-    s.style.display = 'block';
-    e.target.reset();
-    setTimeout(function () { s.style.display = 'none'; }, 5000);
+    var btn = e.target.querySelector('.btn-send');
+
+    var body = new URLSearchParams();
+    body.append(ENTRY_NAME,    document.getElementById('fname').value);
+    body.append(ENTRY_EMAIL,   document.getElementById('femail').value);
+    body.append(ENTRY_SUBJECT, document.getElementById('fsubject').value);
+    body.append(ENTRY_MESSAGE, document.getElementById('fmessage').value);
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    // Google Forms requires no-cors (it redirects, can't read response)
+    fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body: body })
+      .then(function () {
+        s.textContent = '✓ Message sent! I\'ll be in touch soon.';
+        s.style.color = '#4ade80';
+        s.style.display = 'block';
+        e.target.reset();
+        btn.disabled = false;
+        btn.textContent = 'Send Message ✦';
+        setTimeout(function () { s.style.display = 'none'; }, 5000);
+      })
+      .catch(function () {
+        s.textContent = '✗ Something went wrong. Please email me directly.';
+        s.style.color = '#e07a45';
+        s.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send Message ✦';
+      });
   };
 
 })();
