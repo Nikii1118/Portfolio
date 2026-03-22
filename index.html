@@ -660,14 +660,47 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
 
-  /* ── Contact form ── */
+  /* ── Contact form → Google Forms ── */
+  // TODO: Replace these with your actual Google Form values
+  // Get them via: Forms → 3-dot menu → "Get pre-filled link"
+  var GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse';
+  var ENTRY_NAME    = 'entry.XXXXXXXXX'; // replace with your Name field entry ID
+  var ENTRY_EMAIL   = 'entry.XXXXXXXXX'; // replace with your Email field entry ID
+  var ENTRY_SUBJECT = 'entry.XXXXXXXXX'; // replace with your Subject field entry ID
+  var ENTRY_MESSAGE = 'entry.XXXXXXXXX'; // replace with your Message field entry ID
+
   window.handleFormSubmit = function (e) {
     e.preventDefault();
     var s = document.getElementById('form-status');
-    s.textContent = '✓ Message sent! I\'ll be in touch soon.';
-    s.style.display = 'block';
-    e.target.reset();
-    setTimeout(function () { s.style.display = 'none'; }, 5000);
+    var btn = e.target.querySelector('.btn-send');
+
+    var body = new URLSearchParams();
+    body.append(ENTRY_NAME,    document.getElementById('fname').value);
+    body.append(ENTRY_EMAIL,   document.getElementById('femail').value);
+    body.append(ENTRY_SUBJECT, document.getElementById('fsubject').value);
+    body.append(ENTRY_MESSAGE, document.getElementById('fmessage').value);
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    // Google Forms requires no-cors (it redirects, can't read response)
+    fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body: body })
+      .then(function () {
+        s.textContent = '✓ Message sent! I\'ll be in touch soon.';
+        s.style.color = '#4ade80';
+        s.style.display = 'block';
+        e.target.reset();
+        btn.disabled = false;
+        btn.textContent = 'Send Message ✦';
+        setTimeout(function () { s.style.display = 'none'; }, 5000);
+      })
+      .catch(function () {
+        s.textContent = '✗ Something went wrong. Please email me directly.';
+        s.style.color = '#e07a45';
+        s.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send Message ✦';
+      });
   };
 
 })();
