@@ -152,7 +152,7 @@
 
     /* ══════════════ HERO ══════════════ */
     #hero {
-      min-height: 92vh; display: flex; align-items: center;
+      min-height: 92vh; display: flex; align-items: center; justify-content: center;
       padding: 6rem 5% 4rem; position: relative; overflow: hidden;
     }
     #hero::before {
@@ -167,7 +167,7 @@
       background: radial-gradient(circle, rgba(196,98,45,0.05) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero-inner { max-width: 1100px; position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: center; }
+    .hero-inner { width: 100%; max-width: 1100px; position: relative; display: grid; grid-template-columns: 1fr 220px; gap: 5rem; align-items: center; }
     .hero-content { min-width: 0; }
     .hero-stats-side { display: flex; flex-direction: column; gap: 2.5rem; align-items: flex-start; padding-left: 3rem; border-left: 1px solid rgba(196,98,45,0.15); flex-shrink: 0; }
     .hero-eyebrow {
