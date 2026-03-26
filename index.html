@@ -315,7 +315,9 @@
     #contact h2 { color: white; }
     #contact .section-lead { color: rgba(255,255,255,0.55); }
     .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; margin-top: 3.5rem; }
-    .contact-grid--form-only { grid-template-columns: 1fr; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .contact-grid--form-only { grid-template-columns: 1fr; max-width: 680px; margin-left: auto; margin-right: auto; gap: 1.25rem; }
+    .contact-item--linkedin { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; background: var(--dark-surface); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); text-decoration: none; color: white; font-size: 0.9rem; font-weight: 500; transition: border-color 0.2s, background 0.2s; width: fit-content; }
+    .contact-item--linkedin:hover { border-color: rgba(196,98,45,0.4); background: rgba(196,98,45,0.08); }
     .contact-info p { color: rgba(255,255,255,0.6); font-size: 0.95rem; line-height: 1.75; margin-bottom: 2.5rem; font-family: var(--serif); }
     .contact-details { display: flex; flex-direction: column; gap: 1rem; }
     .contact-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.9rem 1.25rem; background: var(--dark-surface); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); text-decoration: none; color: white; transition: border-color 0.2s, background 0.2s; font-size: 0.88rem; font-weight: 500; }
@@ -397,7 +399,7 @@
       <div class="hero-eyebrow">Software Engineer 2 · AI &amp; Infrastructure</div>
       <h1>Nikita <em>Goyal</em></h1>
       <p class="hero-subtitle">Building AI-powered tools and robust datacenter infrastructure at the intersection of firmware, observability, and machine learning.</p>
-      <p class="hero-desc">From real-time server telemetry pipelines ingesting 200+ metrics to GenAI coding agents that cut bug resolution from 5–7 days to 2 — I ship systems that protect enterprise infrastructure at scale.</p>
+      <p class="hero-desc">From real-time server telemetry pipelines ingesting 200+ time-series metrics to GenAI coding agents that cut bug resolution from 5–7 days to 2 — I ship systems that protect enterprise infrastructure at scale.</p>
       <div class="hero-ctas">
         <a href="#experience" class="btn-primary nav-a">View My Work</a>
         <a href="#contact"  class="btn-secondary nav-a">Get In Touch</a>
@@ -464,7 +466,7 @@
         <div class="exp-subsection-title">Server Telemetry</div>
         <ul class="exp-items">
           <li>Developed and maintained metric injection pipelines for iDRAC, ensuring accurate telemetry data across different releases and platforms of Dell PowerEdge servers to maintain uninterrupted server health monitoring and hardware failure prediction for enterprise customers worldwide.</li>
-          <li>Contributed to the iDRAC Telemetry Reference Tools open-source Go-based telemetry pipeline, delivering redfish-compliant metric report generation ingesting <strong>200+ metrics</strong> via SSE into Elasticsearch, InfluxDB, Prometheus, and Splunk with live Grafana dashboards for datacenter observability.</li>
+          <li>Contributed to the iDRAC Telemetry Reference Tools open-source Go-based telemetry pipeline, delivering redfish-compliant metric report generation ingesting <strong>200+ time-series metrics</strong> via SSE into Elasticsearch, InfluxDB, Prometheus, and Splunk with live Grafana dashboards for datacenter observability.</li>
         </ul>
         <div class="exp-links">
           <a href="https://github.com/dell/iDRAC-Telemetry-Reference-Tools" target="_blank" rel="noopener" class="exp-link">
@@ -569,6 +571,7 @@
     <p class="section-lead">Always open to new opportunities, collaborations, and interesting conversations.</p>
   </div>
   <div class="contact-grid contact-grid--form-only">
+    <a href="https://www.linkedin.com/in/nikita-goyal-241884b3/" target="_blank" rel="noopener" class="contact-item contact-item--linkedin reveal"><span class="contact-item-icon">💼</span>Connect on LinkedIn</a>
     <form class="contact-form reveal" onsubmit="handleFormSubmit(event)">
       <div class="form-row">
         <div class="form-group"><label for="fname">Name</label><input type="text" id="fname" placeholder="Your name" required /></div>
