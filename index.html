@@ -287,6 +287,11 @@
     .edu-meta { font-size: 0.78rem; color: var(--ink-light); font-weight: 500; }
     .edu-gpa { display: inline-block; margin-top: 0.65rem; font-size: 0.78rem; font-weight: 700; color: var(--accent); background: rgba(196,98,45,0.08); padding: 0.2rem 0.65rem; border-radius: 100px; }
 
+    /* LEADERSHIP */
+    .leadership-list { max-width: 860px; display: flex; flex-direction: column; gap: 1.25rem; margin-top: 0.5rem; }
+    .leadership-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1.5rem 1.75rem; background: var(--bg-soft); border-radius: var(--radius); border: 1px solid rgba(196,98,45,0.1); border-left: 3px solid var(--accent); }
+    .leadership-item p { margin: 0; font-size: 0.95rem; line-height: 1.75; color: var(--ink); font-family: var(--serif); }
+
     /* PROJECTS */
     #projects { background: var(--bg-soft); }
     .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
@@ -365,6 +370,7 @@
       <li><a href="#experience" class="nav-a">Experience</a></li>
       <li><a href="#skills"     class="nav-a">Skills</a></li>
       <li><a href="#education"  class="nav-a">Education</a></li>
+      <li><a href="#leadership" class="nav-a">Leadership</a></li>
       <li><a href="#projects"   class="nav-a">Projects</a></li>
       <li><a href="#contact"    class="nav-a">Contact</a></li>
     </ul>
@@ -384,6 +390,7 @@
       <li><a href="#experience" class="nav-a">Experience</a></li>
       <li><a href="#skills"     class="nav-a">Skills</a></li>
       <li><a href="#education"  class="nav-a">Education</a></li>
+      <li><a href="#leadership" class="nav-a">Leadership</a></li>
       <li><a href="#projects"   class="nav-a">Projects</a></li>
       <li><a href="#contact"    class="nav-a">Contact</a></li>
     </ul>
@@ -452,14 +459,14 @@
         <div class="exp-subsection-title">Leak Detection Tool</div>
         <ul class="exp-items">
           <li>Developed an open-source liquid cooling leak detection tool for Dell Integrated Rack solutions in Go and React using AI-assisted development, detecting leaks via Redfish SSE streaming and triggering automated shutdown across any custom device type — protecting AI and HPC datacenter infrastructure worth millions from liquid damage.</li>
-          <li>Stress-tested by simulating 100 concurrent rack devices, validating that leak detection and automated shutdown workflows perform reliably at scale under real-world datacenter conditions.</li>
+          <li>Stress-tested the tool by simulating 100 concurrent rack devices, validating that leak detection and automated shutdown workflows perform reliably at scale under real-world datacenter conditions.</li>
         </ul>
       </div>
       <div class="exp-subsection">
         <div class="exp-subsection-title">AI / GenAI &amp; Developer Productivity</div>
         <ul class="exp-items">
           <li>Built <strong>14+ AI coding-agent skills</strong> for firmware workflows covering root-cause analysis, CCB report generation, PR review, and update automation — reducing complex multi-file bug resolution from 5–7 days to 2 days across a large-scale production Go codebase.</li>
-          <li>Developed an AI-powered documentation generation agent using Dell internal LLM tools and Windsurf workflows, automatically generating and syncing project documentation from code changes and eliminating manual documentation overhead for firmware teams.</li>
+          <li>Developed an AI-powered documentation generation agent using Dell internal LLM tools and Windsurf workflows and skills, automatically generating and syncing project documentation from code changes, eliminating manual documentation overhead for firmware teams.</li>
         </ul>
       </div>
       <div class="exp-subsection">
@@ -527,6 +534,22 @@
     <div class="edu-card reveal"><div class="edu-school">University of Cumberlands</div><div class="edu-degree">M.S. Data Science</div><div class="edu-meta">Williamsburg, KY · May 2023 – Dec 2024</div><div class="edu-gpa">GPA 3.75</div></div>
     <div class="edu-card reveal"><div class="edu-school">University of Missouri, Kansas City</div><div class="edu-degree">M.S. Computer Science</div><div class="edu-meta">Kansas City, MO · Jan 2019 – May 2020</div><div class="edu-gpa">GPA 3.8</div></div>
     <div class="edu-card reveal"><div class="edu-school">Chitkara University</div><div class="edu-degree">B.E. Computer Science &amp; Engineering</div><div class="edu-meta">India · Aug 2014 – May 2018</div><div class="edu-gpa">CGPA 8.56</div></div>
+  </div>
+</section>
+
+<!-- ══════════════ LEADERSHIP ══════════════ -->
+<section id="leadership">
+  <div class="section-header reveal">
+    <div class="section-tag">Leadership</div>
+    <h2>Leadership <em>Work</em></h2>
+  </div>
+  <div class="leadership-list">
+    <div class="leadership-item reveal">
+      <p>Led a cross-team effort with the networking intern team to migrate <strong>268 unit test cases</strong> from MATF to Atlas testing framework, ensuring full test coverage continuity and unblocking the networking team's modernization initiative.</p>
+    </div>
+    <div class="leadership-item reveal">
+      <p>Authored the <strong>iDRAC Telemetry Reference Guide</strong>, providing developers and enterprise customers with comprehensive technical documentation for configuring telemetry services, managing Redfish metric reports, and troubleshooting data streaming across server generations.</p>
+    </div>
   </div>
 </section>
 
