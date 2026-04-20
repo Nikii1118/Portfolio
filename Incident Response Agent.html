@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Incident Response Agent — Nikita Goyal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:    oklch(12% 0.008 250);
+      --bg2:   oklch(16% 0.01 250);
+      --bg3:   oklch(20% 0.012 250);
+      --bdr:   oklch(28% 0.012 250);
+      --ink:   oklch(95% 0.005 250);
+      --mid:   oklch(65% 0.01 250);
+      --dim:   oklch(42% 0.01 250);
+      --teal:  oklch(72% 0.16 195);
+      --tealD: oklch(72% 0.16 195 / 0.12);
+      --amber: oklch(78% 0.16 60);
+      --red:   oklch(65% 0.2 25);
+      --green: oklch(72% 0.16 145);
+      --sans:  'Space Grotesk', system-ui, sans-serif;
+      --mono:  'JetBrains Mono', monospace;
+    }
+    html, body { min-height: 100vh; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--bdr); padding: 1rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { font-family: var(--mono); font-size: 0.85rem; color: var(--teal); }
+    .brand span { color: var(--dim); }
+    .header-badge {
+      font-family: var(--mono); font-size: 0.68rem; color: var(--mid);
+      background: var(--bg2); border: 1px solid var(--bdr); border-radius: 6px;
+      padding: 0.3rem 0.75rem; letter-spacing: 0.06em;
+    }
+
+    /* ── HERO ── */
+    .hero { padding: 3rem 5% 2rem; max-width: 860px; margin: 0 auto; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--tealD); border: 1px solid oklch(72% 0.16 195 / 0.25);
+      border-radius: 100px; padding: 0.3rem 0.85rem;
+      font-family: var(--mono); font-size: 0.68rem; color: var(--teal);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .hero-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+    h1 span { color: var(--teal); }
+    .hero-sub { font-size: 0.92rem; color: var(--mid); max-width: 600px; line-height: 1.7; }
+
+    /* ── AGENT PIPELINE ── */
+    .pipeline {
+      display: flex; align-items: center; gap: 0; justify-content: center;
+      padding: 2rem 5%; max-width: 900px; margin: 0 auto;
+      flex-wrap: wrap; row-gap: 0.75rem;
+    }
+    .agent-node {
+      flex: 1; min-width: 130px; max-width: 180px;
+      background: var(--bg2); border: 1px solid var(--bdr); border-radius: 10px;
+      padding: 0.875rem 1rem; position: relative; transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .agent-node.active { border-color: var(--teal); box-shadow: 0 0 20px oklch(72% 0.16 195 / 0.2); }
+    .agent-node.done { border-color: var(--green); }
+    .agent-node.error-node { border-color: var(--red); }
+    .agent-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+    .agent-name { font-size: 0.72rem; font-weight: 700; color: var(--ink); }
+    .agent-role { font-size: 0.65rem; color: var(--dim); margin-top: 0.15rem; font-family: var(--mono); }
+    .agent-status {
+      position: absolute; top: 0.6rem; right: 0.6rem;
+      width: 7px; height: 7px; border-radius: 50%; background: var(--bdr);
+      transition: background 0.3s;
+    }
+    .agent-node.active .agent-status { background: var(--teal); animation: blink 1s infinite; }
+    .agent-node.done .agent-status { background: var(--green); animation: none; }
+    .arrow { color: var(--bdr); font-size: 1.1rem; padding: 0 0.25rem; flex-shrink: 0; transition: color 0.3s; }
+    .arrow.lit { color: var(--teal); }
+
+    /* ── MAIN ── */
+    .main { padding: 0 5% 4rem; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* INPUT */
+    .input-card {
+      background: var(--bg2); border: 1px solid var(--bdr); border-radius: 14px; padding: 1.5rem;
+    }
+    .card-label { font-family: var(--mono); font-size: 0.68rem; color: var(--teal); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .log-textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--bdr); border-radius: 8px;
+      padding: 1rem; color: var(--ink); font-family: var(--mono); font-size: 0.78rem;
+      line-height: 1.65; resize: vertical; min-height: 140px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .log-textarea:focus { border-color: oklch(72% 0.16 195 / 0.5); }
+    .input-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.875rem; flex-wrap: wrap; gap: 0.75rem; }
+    .sample-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .sample-btn {
+      font-size: 0.72rem; font-weight: 500; padding: 0.3rem 0.7rem;
+      background: var(--bg3); border: 1px solid var(--bdr); border-radius: 6px;
+      color: var(--mid); cursor: pointer; font-family: var(--sans);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .sample-btn:hover { color: var(--teal); border-color: oklch(72% 0.16 195 / 0.35); }
+    .btn-run {
+      padding: 0.7rem 1.75rem; background: var(--teal); border: none; border-radius: 8px;
+      color: oklch(12% 0.008 250); font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-run:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    .btn-run:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* AGENT OUTPUT CARDS */
+    .outputs { display: flex; flex-direction: column; gap: 1rem; }
+    .out-card {
+      background: var(--bg2); border: 1px solid var(--bdr); border-radius: 14px;
+      overflow: hidden; transition: border-color 0.3s;
+    }
+    .out-card.active { border-color: var(--teal); }
+    .out-card.done { border-color: oklch(72% 0.16 145 / 0.4); }
+    .out-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--bdr);
+      background: var(--bg3);
+    }
+    .out-icon { font-size: 1rem; }
+    .out-title { font-weight: 700; font-size: 0.88rem; flex: 1; }
+    .out-chip {
+      font-family: var(--mono); font-size: 0.65rem; padding: 0.2rem 0.55rem;
+      border-radius: 4px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .out-chip.waiting { background: var(--bg); color: var(--dim); }
+    .out-chip.running { background: var(--tealD); color: var(--teal); }
+    .out-chip.complete { background: oklch(72% 0.16 145 / 0.12); color: var(--green); }
+    .out-chip.err { background: oklch(65% 0.2 25 / 0.12); color: var(--red); }
+    .out-body { padding: 1.25rem; min-height: 60px; font-size: 0.875rem; line-height: 1.75; color: var(--mid); display: none; }
+    .out-body.visible { display: block; }
+    .out-body.streaming::after { content: '▌'; color: var(--teal); animation: blink 0.7s infinite; }
+
+    /* STYLED OUTPUT */
+    .out-body h4 { font-size: 0.8rem; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.06em; margin: 1rem 0 0.5rem; }
+    .out-body h4:first-child { margin-top: 0; }
+    .out-body ul { padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .out-body li { font-size: 0.875rem; }
+    .out-body .badge {
+      display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+      font-size: 0.7rem; font-weight: 700; font-family: var(--mono); margin-left: 0.35rem;
+    }
+    .badge.crit { background: oklch(65% 0.2 25 / 0.15); color: var(--red); }
+    .badge.warn { background: oklch(78% 0.16 60 / 0.15); color: var(--amber); }
+    .badge.info { background: var(--tealD); color: var(--teal); }
+    .badge.ok   { background: oklch(72% 0.16 145 / 0.12); color: var(--green); }
+
+    /* FINAL REPORT */
+    .report-card {
+      background: var(--bg2); border: 1px solid var(--bdr); border-radius: 14px;
+      overflow: hidden; display: none;
+    }
+    .report-card.visible { display: block; }
+    .report-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--bdr);
+      background: oklch(72% 0.16 145 / 0.08);
+    }
+    .report-title { font-weight: 700; font-size: 0.95rem; }
+    .report-body { padding: 1.5rem; font-size: 0.875rem; line-height: 1.8; color: var(--mid); white-space: pre-wrap; font-family: var(--mono); }
+    .report-actions { padding: 0 1.5rem 1.5rem; display: flex; gap: 0.75rem; }
+    .btn-copy {
+      padding: 0.6rem 1.25rem; background: var(--bg3); border: 1px solid var(--bdr);
+      border-radius: 8px; color: var(--mid); font-family: var(--sans); font-size: 0.82rem;
+      font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-copy:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* SPINNER */
+    .spin { display:inline-block; width:14px; height:14px; border:2px solid oklch(12% 0.008 250 / 0.3); border-top-color:oklch(12% 0.008 250); border-radius:50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer { border-top: 1px solid var(--bdr); padding: 1.25rem 5%; text-align: center; font-family: var(--mono); font-size: 0.7rem; color: var(--dim); }
+    footer a { color: var(--teal); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">incident-response<span>.agent()</span></div>
+  <div class="header-badge">MULTI-AGENT · LLM-POWERED</div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">Agentic AI System</div>
+  <h1>AI <span>Incident Response</span> Agent</h1>
+  <p class="hero-sub">Paste a server log, error trace, or alert. Four specialized AI agents orchestrate in sequence — parsing, root-cause analysis, fix recommendations, and report generation.</p>
+</div>
+
+<!-- PIPELINE DIAGRAM -->
+<div class="pipeline">
+  <div class="agent-node" id="node-0">
+    <div class="agent-status"></div>
+    <div class="agent-icon">🔍</div>
+    <div class="agent-name">Log Parser</div>
+    <div class="agent-role">agent_01</div>
+  </div>
+  <div class="arrow" id="arr-0">→</div>
+  <div class="agent-node" id="node-1">
+    <div class="agent-status"></div>
+    <div class="agent-icon">🧠</div>
+    <div class="agent-name">Root Cause</div>
+    <div class="agent-role">agent_02</div>
+  </div>
+  <div class="arrow" id="arr-1">→</div>
+  <div class="agent-node" id="node-2">
+    <div class="agent-status"></div>
+    <div class="agent-icon">🔧</div>
+    <div class="agent-name">Fix Advisor</div>
+    <div class="agent-role">agent_03</div>
+  </div>
+  <div class="arrow" id="arr-2">→</div>
+  <div class="agent-node" id="node-3">
+    <div class="agent-status"></div>
+    <div class="agent-icon">📋</div>
+    <div class="agent-name">Report Writer</div>
+    <div class="agent-role">agent_04</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INPUT -->
+  <div class="input-card">
+    <div class="card-label">// paste log / error / alert</div>
+    <textarea class="log-textarea" id="log-input" placeholder="Paste server logs, stack traces, error messages, or alerts here...
+
+Example:
+[CRITICAL] Thermal sensor threshold exceeded on CPU0 (92°C). System shutdown imminent.
+[ERROR] Uncorrectable memory error detected on DIMM slot A2.
+[WARN] Network interface link down detected."></textarea>
+    <div class="input-footer">
+      <div class="sample-btns">
+        <span class="sample-label" style="font-size:0.72rem;color:var(--dim);align-self:center;">Try sample:</span>
+        <button class="sample-btn" onclick="loadSample('thermal')">Thermal Alert</button>
+        <button class="sample-btn" onclick="loadSample('memory')">Memory Error</button>
+        <button class="sample-btn" onclick="loadSample('crash')">App Crash</button>
+        <button class="sample-btn" onclick="loadSample('network')">Network Issue</button>
+      </div>
+      <button class="btn-run" id="btn-run" onclick="runAgents()">
+        <span id="run-label">Run Agents</span>
+        <div class="spin" id="run-spin" style="display:none"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- AGENT OUTPUTS -->
+  <div class="outputs" id="outputs">
+    <div class="out-card" id="out-0">
+      <div class="out-header">
+        <div class="out-icon">🔍</div>
+        <div class="out-title">Log Parser Agent</div>
+        <div class="out-chip waiting" id="chip-0">WAITING</div>
+      </div>
+      <div class="out-body" id="body-0"></div>
+    </div>
+    <div class="out-card" id="out-1">
+      <div class="out-header">
+        <div class="out-icon">🧠</div>
+        <div class="out-title">Root Cause Analyzer Agent</div>
+        <div class="out-chip waiting" id="chip-1">WAITING</div>
+      </div>
+      <div class="out-body" id="body-1"></div>
+    </div>
+    <div class="out-card" id="out-2">
+      <div class="out-header">
+        <div class="out-icon">🔧</div>
+        <div class="out-title">Fix Advisor Agent</div>
+        <div class="out-chip waiting" id="chip-2">WAITING</div>
+      </div>
+      <div class="out-body" id="body-2"></div>
+    </div>
+    <div class="out-card" id="out-3">
+      <div class="out-header">
+        <div class="out-icon">📋</div>
+        <div class="out-title">Report Writer Agent</div>
+        <div class="out-chip waiting" id="chip-3">WAITING</div>
+      </div>
+      <div class="out-body" id="body-3"></div>
+    </div>
+  </div>
+
+  <!-- FINAL REPORT -->
+  <div class="report-card" id="report-card">
+    <div class="report-header">
+      <span style="font-size:1.1rem">✅</span>
+      <div class="report-title">Incident Report Generated</div>
+      <div style="flex:1"></div>
+      <div style="font-family:var(--mono);font-size:0.7rem;color:var(--green)">ALL AGENTS COMPLETE</div>
+    </div>
+    <div class="report-body" id="report-body"></div>
+    <div class="report-actions">
+      <button class="btn-copy" onclick="copyReport()">Copy Report</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Built by <a href="https://github.com/Nikii1118" target="_blank">Nikita Goyal</a> ·
+  Multi-Agent AI System · LangGraph-style orchestration ·
+  <a href="https://github.com/Nikii1118" target="_blank">GitHub</a>
+</footer>
+
+<script>
+const SAMPLES = {
+  thermal: `[2024-03-15 14:23:11] CRITICAL BMC: Inlet temperature sensor reading 47°C, threshold 45°C exceeded.
+[2024-03-15 14:23:12] CRITICAL BMC: CPU0 temperature 94°C. Critical threshold (90°C) breached.
+[2024-03-15 14:23:12] WARN    BMC: Fan redundancy lost. Fan_5A failed (0 RPM). Remaining fans at 100%.
+[2024-03-15 14:23:13] ERROR   BMC: PCIe slot 3 (NVIDIA A100) temperature 87°C, throttling initiated.
+[2024-03-15 14:23:15] CRITICAL BMC: System thermal shutdown sequence initiated. Graceful OS shutdown in 60s.
+[2024-03-15 14:23:16] INFO    BMC: SEL event 0x4E - Thermal shutdown trigger.`,
+
+  memory: `[2024-03-15 09:11:02] ERROR  kernel: EDAC MC0: 1 UE on mc#0csrow#2channel#0 (csrow:2 channel:0 page:0x12a3b4 offset:0x18 grain:8 syndrome:0x0 - DIMM_A2)
+[2024-03-15 09:11:02] ERROR  kernel: EDAC MC0: UE row 2, channel-select 0, label "": 1 UE
+[2024-03-15 09:11:03] CRITICAL BMC: Uncorrectable memory error detected. DIMM slot A2. Rank 1, Bank 0.
+[2024-03-15 09:11:03] WARN   kernel: mce: [Hardware Error]: Machine check events logged
+[2024-03-15 09:11:03] ERROR  kernel: mce: [Hardware Error]: CPU 0: Machine Check Exception: 5 Bank 5: ba80000000000008
+[2024-03-15 09:11:04] CRITICAL BMC: Memory POST failure anticipated on next boot. Recommend DIMM replacement.
+[2024-03-15 09:11:05] INFO   BMC: Server will reduce available memory to 56GB (was 64GB) as failsafe.`,
+
+  crash: `[2024-03-15 16:45:01] ERROR  app[telemetry-svc]: panic: runtime error: index out of range [12] with length 10
+goroutine 847 [running]:
+main.processMetricBatch(0xc0004b2000, 0xc, 0xa)
+  /home/app/telemetry/processor.go:214 +0x1a3
+main.(*MetricWorker).Run(0xc0002c8000)
+  /home/app/telemetry/worker.go:89 +0x67
+[2024-03-15 16:45:01] ERROR  app[telemetry-svc]: Service crashed. Restart attempt 1/3.
+[2024-03-15 16:45:03] WARN   app[telemetry-svc]: Restart failed. Port 8080 still in use (PID 1842 zombie).
+[2024-03-15 16:45:05] CRITICAL supervisor: telemetry-svc failed to restart after 3 attempts. Alerting on-call.
+[2024-03-15 16:45:06] ERROR  metrics: 847 metric reports dropped. Grafana dashboards stale.`,
+
+  network: `[2024-03-15 11:30:00] WARN   BMC: NIC em1 link down detected (1Gbps dedicated management port).
+[2024-03-15 11:30:01] ERROR  BMC: Remote management connectivity lost. Accessible via em2 only.
+[2024-03-15 11:30:01] WARN   kernel: e1000e 0000:01:00.0 em1: NIC Link is Down
+[2024-03-15 11:30:15] ERROR  BMC: IPMI over LAN requests timing out on primary interface.
+[2024-03-15 11:30:30] WARN   BMC: Redfish SSE stream interrupted. Telemetry data gap of 30 seconds.
+[2024-03-15 11:31:00] INFO   BMC: Attempting NIC failover to em2. Teaming reconfigured.
+[2024-03-15 11:31:05] WARN   network: Switch port Gi0/24 error counter incrementing (CRC errors: 847).`
+};
+
+function loadSample(key) {
+  document.getElementById('log-input').value = SAMPLES[key];
+}
+
+function setNode(i, state) {
+  const node = document.getElementById('node-' + i);
+  node.className = 'agent-node ' + (state || '');
+  if (i > 0) document.getElementById('arr-' + (i-1)).className = 'arrow' + (state ? ' lit' : '');
+}
+
+function setChip(i, state, label) {
+  const chip = document.getElementById('chip-' + i);
+  chip.className = 'out-chip ' + state;
+  chip.textContent = label;
+}
+
+function showBody(i, html, streaming) {
+  const body = document.getElementById('body-' + i);
+  body.innerHTML = html;
+  body.className = 'out-body visible' + (streaming ? ' streaming' : '');
+  document.getElementById('out-' + i).className = 'out-card ' + (streaming ? 'active' : 'done');
+}
+
+function resetUI() {
+  for (let i = 0; i < 4; i++) {
+    setNode(i, '');
+    setChip(i, 'waiting', 'WAITING');
+    document.getElementById('body-' + i).className = 'out-body';
+    document.getElementById('body-' + i).innerHTML = '';
+    document.getElementById('out-' + i).className = 'out-card';
+  }
+  document.getElementById('arr-0').className = 'arrow';
+  document.getElementById('arr-1').className = 'arrow';
+  document.getElementById('arr-2').className = 'arrow';
+  document.getElementById('report-card').className = 'report-card';
+}
+
+async function callAgent(systemPrompt, userContent) {
+  return await window.claude.complete({
+    messages: [
+      { role: 'user', content: `SYSTEM: ${systemPrompt}\n\nINPUT:\n${userContent}` }
+    ]
+  });
+}
+
+async function runAgents() {
+  const log = document.getElementById('log-input').value.trim();
+  if (!log) { alert('Please paste a log or error first.'); return; }
+
+  const btn = document.getElementById('btn-run');
+  const spin = document.getElementById('run-spin');
+  const runLabel = document.getElementById('run-label');
+  btn.disabled = true; spin.style.display = 'inline-block'; runLabel.textContent = 'Running...';
+  resetUI();
+
+  let parsed, rootCause, fixes, report;
+
+  try {
+    // ── AGENT 1: LOG PARSER ──
+    setNode(0, 'active'); setChip(0, 'running', 'RUNNING');
+    showBody(0, 'Parsing log entries...', true);
+
+    parsed = await callAgent(
+      `You are a server log parsing agent. Analyze the provided log and extract structured information.
+Return a concise analysis in this EXACT HTML format (no markdown, use these tags only):
+<h4>Severity</h4><p>[CRITICAL/HIGH/MEDIUM/LOW] - one sentence summary</p>
+<h4>Events Detected</h4><ul><li>[timestamp if present] Event description <span class="badge [crit/warn/info]">SEVERITY</span></li>...</ul>
+<h4>Affected Components</h4><ul><li>Component name and what is affected</li>...</ul>
+<h4>Timestamps</h4><p>Time range of the incident if available.</p>`,
+      log
+    );
+    showBody(0, parsed, false);
+    setNode(0, 'done'); setChip(0, 'complete', 'COMPLETE');
+
+    // ── AGENT 2: ROOT CAUSE ──
+    setNode(1, 'active'); setChip(1, 'running', 'RUNNING');
+    showBody(1, 'Analyzing root cause...', true);
+
+    rootCause = await callAgent(
+      `You are a root cause analysis agent for server infrastructure incidents. 
+Given the parsed log analysis, identify the most likely root cause(s).
+Return in this EXACT HTML format:
+<h4>Primary Root Cause</h4><p>Clear explanation of the most likely cause.</p>
+<h4>Contributing Factors</h4><ul><li>Factor description</li>...</ul>
+<h4>Impact Assessment</h4><ul><li>What is affected and how <span class="badge [crit/warn/ok]">IMPACT</span></li>...</ul>
+<h4>Confidence</h4><p>[HIGH/MEDIUM/LOW] confidence with brief reasoning.</p>`,
+      `PARSED LOG:\n${parsed}\n\nORIGINAL LOG:\n${log}`
+    );
+    showBody(1, rootCause, false);
+    setNode(1, 'done'); setChip(1, 'complete', 'COMPLETE');
+
+    // ── AGENT 3: FIX ADVISOR ──
+    setNode(2, 'active'); setChip(2, 'running', 'RUNNING');
+    showBody(2, 'Generating fix recommendations...', true);
+
+    fixes = await callAgent(
+      `You are a fix advisor agent for server infrastructure incidents. 
+Given the root cause analysis, provide actionable remediation steps.
+Return in this EXACT HTML format:
+<h4>Immediate Actions (0-30 min)</h4><ul><li>Specific action to take now</li>...</ul>
+<h4>Short-term Fixes (1-24 hrs)</h4><ul><li>Action with brief explanation</li>...</ul>
+<h4>Long-term Prevention</h4><ul><li>Process or infrastructure improvement</li>...</ul>
+<h4>Escalation</h4><p>Who to notify and when to escalate.</p>`,
+      `ROOT CAUSE:\n${rootCause}\n\nORIGINAL LOG:\n${log}`
+    );
+    showBody(2, fixes, false);
+    setNode(2, 'done'); setChip(2, 'complete', 'COMPLETE');
+
+    // ── AGENT 4: REPORT WRITER ──
+    setNode(3, 'active'); setChip(3, 'running', 'RUNNING');
+    showBody(3, 'Writing incident report...', true);
+
+    report = await callAgent(
+      `You are a technical report writer agent. Generate a professional incident report.
+Write in plain text (no HTML). Use this structure:
+INCIDENT REPORT
+===============
+Date/Time: [extract from logs or use "See timestamps"]
+Severity: [CRITICAL/HIGH/MEDIUM/LOW]
+Status: UNDER INVESTIGATION
+
+EXECUTIVE SUMMARY
+[2-3 sentence non-technical summary]
+
+TECHNICAL DETAILS
+[Technical description of what happened]
+
+ROOT CAUSE
+[Clear root cause statement]
+
+IMPACT
+[What was/is impacted]
+
+REMEDIATION STEPS
+[Numbered list of actions taken or required]
+
+PREVENTION
+[How to prevent recurrence]
+
+Reported by: AI Incident Response Agent (Multi-Agent System)`,
+      `PARSED LOG:\n${parsed}\n\nROOT CAUSE:\n${rootCause}\n\nFIX RECOMMENDATIONS:\n${fixes}`
+    );
+
+    showBody(3, '<p style="color:var(--green);font-size:0.85rem;">✓ Report generated successfully.</p>', false);
+    setNode(3, 'done'); setChip(3, 'complete', 'COMPLETE');
+
+    // Show report
+    document.getElementById('report-body').textContent = report;
+    document.getElementById('report-card').className = 'report-card visible';
+    document.getElementById('report-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    console.error(err);
+    const activeIdx = [parsed, rootCause, fixes].filter(Boolean).length;
+    setNode(activeIdx, 'error-node');
+    setChip(activeIdx, 'err', 'ERROR');
+    showBody(activeIdx, `<p style="color:var(--red)">Agent error: ${err.message || 'Unknown error. Please try again.'}</p>`, false);
+  }
+
+  btn.disabled = false; spin.style.display = 'none'; runLabel.textContent = 'Run Agents';
+}
+
+function copyReport() {
+  const text = document.getElementById('report-body').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy Report', 2000);
+  });
+}
+</script>
+</body>
+</html>
